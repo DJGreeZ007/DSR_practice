@@ -13,8 +13,6 @@ using namespace nal;						//Node and Link classes
 
 namespace mp {
 
-
-
 	//map_parser error
 	enum map_parser_error {
 		NO_ERRORS,

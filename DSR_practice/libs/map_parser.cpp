@@ -46,8 +46,13 @@ map_parser_error Map_parser::init(std::string filename)
 			auto iter = std::find(begin(line), end(line), '|');
 			std::string data = line.substr(0, iter-begin(line));
 			data_in_rows.push_back(data);
+
+			//delete saved data in the line
 			line.erase(begin(line), iter);
 		}
+
+		//todo 
+		//convert data to the desired format
 
 		for (auto it : data_in_rows) {
 			std::cout << it << " : ";
