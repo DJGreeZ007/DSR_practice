@@ -34,7 +34,7 @@ map_parser_error Map_parser::init(std::string filename)
 		/* Delete all space */
 		line.erase(std::remove_if(begin(line), end(line), [](char symb) {return symb == ' '; }), end(line));
 
-		std::vector<std::string> data_in_rows;
+		std::vector<std::string> data_in_row;
 		const size_t number_of_columns = 6; /* The amount of data in a row */
 		for (size_t i = 0; i < number_of_columns; ++i) {
 
@@ -48,7 +48,7 @@ map_parser_error Map_parser::init(std::string filename)
 			/* Get element */
 			auto iter = std::find(begin(line), end(line), '|');
 			std::string data = line.substr(0, iter-begin(line));
-			data_in_rows.push_back(data);
+			data_in_row.push_back(data);
 
 			/* Delete saved data in the line */
 			line.erase(begin(line), iter);
@@ -59,13 +59,13 @@ map_parser_error Map_parser::init(std::string filename)
 			return ERROR_INCORRECT_DATA_IN_FILE;
 		}
 
-		std::string from = data_in_rows[0];
-		std::string to = data_in_rows[1];
+		std::string from = data_in_row[0];
+		std::string to = data_in_row[1];
 
 		/* Communication quality indication */
 		std::uint8_t lqi;
 		try {
-			unsigned long tmp = std::stoul(data_in_rows[2]);
+			unsigned long tmp = std::stoul(data_in_row[2]);
 			if (tmp > std::numeric_limits<std::uint8_t>::max() || tmp <= 0) {
 				throw std::invalid_argument("Communication quality indication error");
 			}
@@ -78,7 +78,7 @@ map_parser_error Map_parser::init(std::string filename)
 		/* Network address */
 		std::uint16_t addr;
 		try {
-			convert_hex_string_to_uint(data_in_rows[3]);
+			convert_hex_string_to_uint(data_in_row[3]);
 			/*unsigned long tmp = std::stoul(data_in_rows[3]);
 			std::cout << tmp;*/
 			/*if (tmp > UCHAR_MAX || tmp <= 0) {
