@@ -23,9 +23,9 @@ namespace nal {
 	struct Link;
 
 	struct Node {
-		bool completed{ false };						/* Was the node completely full? */
-		std::string id{};								/* Name to display */
-		std::uint16_t addr{};							/* Network address */
+		bool completed{ false };                                         /* Was the node completely full? */
+		std::string id{};                                                /* Name to display */
+		std::uint16_t addr{};                                            /* Network address */
 		Nwk_type device_type{ Nwk_type::NWKMAP_DEV_UNKNOWN };
 		std::string label{};
 		std::vector<Link> links{};
@@ -35,9 +35,9 @@ namespace nal {
 
 	struct Link {
 		Node* node{};
-		std::uint8_t lqi{};												/* Link Quality Indication */
-		Nwk_relation relation{ Nwk_relation::NWKMAP_RELATION_UNKNOWN };	/* Type of relationship */
+		std::uint8_t lqi{};                                               /* Link Quality Indication */
+		Nwk_relation relation{ Nwk_relation::NWKMAP_RELATION_UNKNOWN };	  /* Type of relationship */
 	};
 }
 
-#endif //NODE_AND_LINK_H
+#endif /* NODE_AND_LINK_H */
