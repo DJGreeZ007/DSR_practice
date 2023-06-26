@@ -13,15 +13,15 @@ map_parser_error Map_parser::init(std::string filename)
 	std::ifstream file(filename);
 
 	if(!file.is_open()) {
-		return ERROR_FILE_OPENING; /* Error opening the file */
+		return ERROR_FILE_OPENING;         /* Error opening the file */
 	}
 
-	std::string line; /* Auxiliary string for reading data from a file */
+	std::string line;                          /* Auxiliary string for reading data from a file */
 
 	/* Skipping header lines */
 	std::getline(file, line);
 	if (!std::getline(file, line)) {
-		return ERROR_READING_FILE_HEADER; /* Error reading the file header */
+		return ERROR_READING_FILE_HEADER;  /* Error reading the file header */
 	}
 
 
