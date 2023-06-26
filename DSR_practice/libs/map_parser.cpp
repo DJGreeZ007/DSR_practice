@@ -2,59 +2,59 @@
 
 using namespace mp;
 
-#include <iostream>   // delete
-#include <limits>     // Maximum value of variables
-#include <cmath>      // Pow
+#include <iostream>   /* Delete */
+#include <limits>     /* Maximum value of variables */
+#include <cmath>      /* Pow */
 
 map_parser_error Map_parser::init(std::string filename)
 {
 
-	//open file
+	/* Open file */
 	std::ifstream file(filename);
 
 	if(!file.is_open()) {
-		return ERROR_FILE_OPENING; // Error opening the file
+		return ERROR_FILE_OPENING; /* Error opening the file */
 	}
 
-	std::string line;
+	std::string line; /* Auxiliary string for reading data from a file */
 
-	//skipping header lines
+	/* Skipping header lines */
 	std::getline(file, line);
 	if (!std::getline(file, line)) {
-		return ERROR_READING_FILE_HEADER; // Error reading the file header
+		return ERROR_READING_FILE_HEADER; /* Error reading the file header */
 	}
 
 
-	// parsing
+	/* Parsing */
 	while (std::getline(file, line)) {
 		if (line.size() != 102) {
 			return ERROR_INCORRECT_DATA_IN_FILE;
 		}
 
-		// delete all space
+		/* Delete all space */
 		line.erase(std::remove_if(begin(line), end(line), [](char symb) {return symb == ' '; }), end(line));
 
 		std::vector<std::string> data_in_rows;
-		const size_t amount_of_data_in_row = 6; // the amount of data in a row
-		for (size_t i = 0; i < amount_of_data_in_row; ++i) {
+		const size_t number_of_columns = 6; /* The amount of data in a row */
+		for (size_t i = 0; i < number_of_columns; ++i) {
 
-			// check symb |
+			/* Check symb | */
 			if (std::find(begin(line), end(line), '|') != begin(line)) {
 				return ERROR_INCORRECT_DATA_IN_FILE;
 			}
-			// delete first |
+			/* Delete first | */
 			line.erase(0, 1);
 
-			// get data
+			/* Get element */
 			auto iter = std::find(begin(line), end(line), '|');
 			std::string data = line.substr(0, iter-begin(line));
 			data_in_rows.push_back(data);
 
-			// delete saved data in the line
+			/* Delete saved data in the line */
 			line.erase(begin(line), iter);
 		}
 
-		// check last symb |
+		/* Check last symb | */
 		if (std::find(begin(line), end(line), '|') == end(line)) {
 			return ERROR_INCORRECT_DATA_IN_FILE;
 		}
@@ -62,7 +62,7 @@ map_parser_error Map_parser::init(std::string filename)
 		std::string from = data_in_rows[0];
 		std::string to = data_in_rows[1];
 
-		// Communication quality indication
+		/* Communication quality indication */
 		std::uint8_t lqi;
 		try {
 			unsigned long tmp = std::stoul(data_in_rows[2]);
@@ -75,7 +75,7 @@ map_parser_error Map_parser::init(std::string filename)
 			return ERROR_COMMUNICATION_QUALITY_INDICATION;
 		}
 
-		// Network address
+		/* Network address */
 		std::uint16_t addr;
 		try {
 			convert_hex_string_to_uint(data_in_rows[3]);
@@ -101,7 +101,7 @@ uint64_t mp::convert_hex_string_to_uint(const std::string& str_hex)
 {
 	std::string hex = str_hex;
 	if (hex.size() >= 2) {
-		hex.erase(0, 2); //removing uppercase characters
+		hex.erase(0, 2); /* Removing uppercase characters */
 		std::uint64_t result{};
 		for (int i = hex.size() - 1; i >= 0; --i) {
 			int value;
