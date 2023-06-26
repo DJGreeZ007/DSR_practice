@@ -2,8 +2,9 @@
 
 using namespace mp;
 
-#include <iostream> // delete
-#include <limits>
+#include <iostream>   // delete
+#include <limits>     // Maximum value of variables
+#include <cmath>      // Pow
 
 map_parser_error Map_parser::init(std::string filename)
 {
@@ -65,7 +66,7 @@ map_parser_error Map_parser::init(std::string filename)
 		std::uint8_t lqi;
 		try {
 			unsigned long tmp = std::stoul(data_in_rows[2]);
-			if (tmp > UCHAR_MAX || tmp <= 0) {
+			if (tmp > std::numeric_limits<std::uint8_t>::max() || tmp <= 0) {
 				throw std::invalid_argument("Communication quality indication error");
 			}
 			lqi = tmp;
