@@ -5,7 +5,7 @@ using namespace mp;
 #include <iostream>   /* Delete */
 #include <limits>     /* Maximum value of variables */
 #include <cmath>      /* Pow */
-#include <string>     /* Stoul */  
+#include <string>     /* Stoul */
 
 map_parser_error Map_parser::init(const std::string& _filename)
 {
