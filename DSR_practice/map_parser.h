@@ -1,7 +1,6 @@
 #ifndef MAP_PARSER_H
 #define MAP_PARSER_H
 
-
 /* Libs */
 #include "libs/node_and_link.h"
 
@@ -10,7 +9,7 @@
 #include <fstream>
 #include <iostream> /* tmp */
 
-using namespace nal;                                        /* Node and Link classes */
+using namespace nal;                                         /* Node and Link classes */
 
 namespace mp {
 
