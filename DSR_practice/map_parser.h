@@ -32,8 +32,6 @@ namespace mp {
     nal::Nwk_relation get_relationship_from_string(const std::string& _realationship);
 
 	class Map_parser {
-		Node* head{};                                      /* Reference to the main element, i.e. ZC */
-		std::vector <Node*> nodes{};                       /* List of all nodes */
 	public:
         map_parser_error init(const std::string& _filename); /* Creating a graph from data in a file */
 
