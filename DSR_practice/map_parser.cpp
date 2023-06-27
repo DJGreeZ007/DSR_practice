@@ -1,17 +1,17 @@
-#include "map_parser.h"
+﻿#include "map_parser.h"
 
 using namespace mp;
 
 #include <iostream>   /* Delete */
 #include <limits>     /* Maximum value of variables */
 #include <cmath>      /* Pow */
-#include <string>     /* Stoul */
+#include <string>     /* Stoul */  
 
-map_parser_error Map_parser::init(std::string filename)
+map_parser_error Map_parser::init(const std::string& _filename)
 {
 
     /* Open file */
-    std::ifstream file(filename);
+    std::ifstream file(_filename);
 
     if(!file.is_open()) {
         return ERROR_FILE_OPENING;         /* Error opening the file */
@@ -60,8 +60,20 @@ map_parser_error Map_parser::init(std::string filename)
             return ERROR_INCORRECT_DATA_IN_FILE;
         }
 
-        std::string from = data_in_row[0];
-        std::string to = data_in_row[1];
+        /* From */
+        std::string from{};
+        bool zc_flag = data_in_row[0].substr(0, 4) == "SGW-";           /* flag for tracking SWG- signatures */
+        if (!(zc_flag) && data_in_row[0].substr(0, 3) != "zb.") {
+            return ERROR_ADDRESS_IN_FROM;
+        }
+        from = data_in_row[0];
+
+        /* To */
+        std::string to;
+        if (data_in_row[1].substr(0, 3) != "zb.") {
+            return ERROR_ADDRESS_IN_TO;
+        }
+        to = data_in_row[1];
 
         /* Communication quality indication */
         std::uint8_t lqi;
@@ -91,8 +103,48 @@ map_parser_error Map_parser::init(std::string filename)
             return ERROR_INVALID_ADDRESS;
         }
 
+        /* Type */
+        nal::Nwk_type device_type;
+        if (data_in_row[4] == "ZR") {
+            device_type = nal::Nwk_type::NWKMAP_DEV_ROUTER;
+        }
+        else if (data_in_row[4] == "ZC") {
+            device_type = nal::Nwk_type::NWKMAP_DEV_COORDINATOR;
+        }
+        else if (data_in_row[4] == "ZED") {
+            device_type = nal::Nwk_type::NWKMAP_DEV_END_DEVICE;
+        }
+        else {
+            device_type = nal::Nwk_type::NWKMAP_DEV_UNKNOWN;
+        }
         
+        /* Relationship */
+        nal::Nwk_relation relation;
+        if (data_in_row[5] == "Sibling") {
+            relation = nal::Nwk_relation::NWKMAP_RELATION_SIBLING;
+        }
+        else if (data_in_row[5] == "Parent") {
+            relation = nal::Nwk_relation::NWKMAP_RELATION_PARENT;
+        }
+        else if (data_in_row[5] == "Child") {
+            relation = nal::Nwk_relation::NWKMAP_RELATION_CHILD;
+        }
+        else if (data_in_row[5] == "Prev_child") {
+            relation = nal::Nwk_relation::NWKMAP_RELATION_PREV_CHILD;
+        }
+        else {
+            relation = nal::Nwk_relation::NWKMAP_RELATION_UNKNOWN;
+        }
 
+
+        /* Right id */
+        Node* right_dev{};
+        if (device_type == nal::Nwk_type::NWKMAP_DEV_COORDINATOR) {
+
+        }
+        else {
+
+        }
 
 
     }
@@ -100,6 +152,15 @@ map_parser_error Map_parser::init(std::string filename)
     file.close();
 
     return NO_ERRORS;
+}
+
+Node* mp::Map_parser::find(const std::string& _id) {
+    for (auto& it : nodes) {
+        if (*it == _id) {
+            return it;
+        }
+    }
+    return nullptr;
 }
 
 //uint64_t mp::convert_hex_string_to_uint(const std::string& str_hex)

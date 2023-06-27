@@ -29,14 +29,14 @@ namespace nal {
         Nwk_type device_type{ Nwk_type::NWKMAP_DEV_UNKNOWN };
         std::string label{};
         std::vector<Link> links{};
-        Node(std::string _id);
+        Node();
         Node(std::string _id, std::uint16_t _addr, Nwk_type _device_type, std::string _label);
+        bool operator == (const std::string& id) const;
     };
-
     struct Link {
         Node* node{};
-        std::uint8_t lqi{};                                               /* Link Quality Indication */
-        Nwk_relation relation{ Nwk_relation::NWKMAP_RELATION_UNKNOWN };	  /* Type of relationship */
+        std::uint8_t lqi{};                                              /* Link Quality Indication */
+        Nwk_relation relation{ Nwk_relation::NWKMAP_RELATION_UNKNOWN };	 /* Type of relationship */
     };
 }
 
