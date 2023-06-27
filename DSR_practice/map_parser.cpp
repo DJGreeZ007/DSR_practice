@@ -36,7 +36,7 @@ map_parser_error Map_parser::init(const std::string& _filename)
         line.erase(std::remove_if(begin(line), end(line), [](char symb) {return symb == ' '; }), end(line));
 
         std::vector<std::string> data_in_row;
-        const size_t number_of_columns = 6; /* The amount of data in a row */
+        const size_t number_of_columns = 6;                            /* The amount of data in a row */
         for (size_t i = 0; i < number_of_columns; ++i) {
 
             /* Check symb | */
@@ -91,8 +91,8 @@ map_parser_error Map_parser::init(const std::string& _filename)
         /* Network address */
         std::uint16_t addr;
         try {
-            size_t pos{};        /* Position in the address bar */
-            const int base = 16; /* Hexadecimal base */
+            size_t pos{};                                       /* Position in the address bar */
+            const int base = 16;                                /* Hexadecimal base */
             unsigned long tmp = std::stoul(data_in_row[3], &pos, base);
             if (tmp > std::numeric_limits<std::uint16_t>::max()) {
                 throw std::invalid_argument("Invalid address");
@@ -104,53 +104,77 @@ map_parser_error Map_parser::init(const std::string& _filename)
         }
 
         /* Type */
-        nal::Nwk_type device_type;
-        if (data_in_row[4] == "ZR") {
-            device_type = nal::Nwk_type::NWKMAP_DEV_ROUTER;
-        }
-        else if (data_in_row[4] == "ZC") {
-            device_type = nal::Nwk_type::NWKMAP_DEV_COORDINATOR;
-        }
-        else if (data_in_row[4] == "ZED") {
-            device_type = nal::Nwk_type::NWKMAP_DEV_END_DEVICE;
-        }
-        else {
-            device_type = nal::Nwk_type::NWKMAP_DEV_UNKNOWN;
-        }
+        nal::Nwk_type device_type = get_type_from_string(data_in_row[4]);
         
         /* Relationship */
-        nal::Nwk_relation relation;
-        if (data_in_row[5] == "Sibling") {
-            relation = nal::Nwk_relation::NWKMAP_RELATION_SIBLING;
-        }
-        else if (data_in_row[5] == "Parent") {
-            relation = nal::Nwk_relation::NWKMAP_RELATION_PARENT;
-        }
-        else if (data_in_row[5] == "Child") {
-            relation = nal::Nwk_relation::NWKMAP_RELATION_CHILD;
-        }
-        else if (data_in_row[5] == "Prev_child") {
-            relation = nal::Nwk_relation::NWKMAP_RELATION_PREV_CHILD;
-        }
-        else {
-            relation = nal::Nwk_relation::NWKMAP_RELATION_UNKNOWN;
-        }
-
+        nal::Nwk_relation relation = get_relationship_from_string(data_in_row[5]);
 
         /* Right id */
         Node* right_dev{};
+        /* Coordinator */
         if (device_type == nal::Nwk_type::NWKMAP_DEV_COORDINATOR) {
+            /* Checking head */
+            if (find(to)) {
+                return ERROR_INCORRECT_LINKS;
+            }
 
+            if (head) {
+                if (!head->get_completed_node()) {              /* The coordinator is installed and not initialized */
+                    head->set_node(to, addr, device_type);      /* Adding information to the coordinator */
+                }
+            }
+            else {
+                head = new Node{ to, addr, device_type };       /* Creating a Coordinator */
+            }
+            right_dev = head;                                   /* Saving the node as a header */
         }
+        /* Other devices */
         else {
+            /* Checking head */
+            if (head && head->get_id() == to) {
+                return ERROR_INCORRECT_LINKS;
+            }
 
+            right_dev = find(to);
+            if (right_dev) {
+                if (!right_dev->get_completed_node()) {         /* The device is not installed */
+                    right_dev->set_node(to, addr, device_type); /* Adding information to the device */
+                }
+            }
+            else {
+                right_dev = new Node{ to, addr, device_type };  /* Creating a device */
+                nodes.push_back(right_dev);                     /* Saving a node in a list */
+            }
         }
 
+        /* Left id */
+        Node* left_dev{};
+        /* Coordinator */
+        if (zc_flag) {                                          /* The left device is the header */
+            if (!head) {
+                head = new Node{};                              /* Creating a Coordinator */
+            }
+            if (!head->get_label_is_installed()) {              /* The coordinator is installed but the label field is not initialized */
+                head->set_label(from);                          /* Adding information to the coordinator */
+            }
+            left_dev = head;
+        }
+        /* Other devices */
+        else {
+            left_dev = find(from);
+            if (!left_dev) {
+                left_dev = new Node{ from };                    /* Creating a new node */
+                nodes.push_back(left_dev);                      /* Saving a node in a list */
+            }
+        }
 
+        /* Links */
+        if (!left_dev->add_links(Link{ right_dev, lqi, relation })) {
+            return ERROR_INCORRECT_LINKS;
+        }
     }
 
     file.close();
-
     return NO_ERRORS;
 }
 
@@ -161,6 +185,37 @@ Node* mp::Map_parser::find(const std::string& _id) {
         }
     }
     return nullptr;
+}
+
+nal::Nwk_type mp::get_type_from_string(const std::string& _type)
+{
+    if (_type == "ZR") {
+        return nal::Nwk_type::NWKMAP_DEV_ROUTER;
+    }
+    else if (_type == "ZC") {
+        return nal::Nwk_type::NWKMAP_DEV_COORDINATOR;
+    }
+    else if (_type == "ZED") {
+        return nal::Nwk_type::NWKMAP_DEV_END_DEVICE;
+    }
+    return nal::Nwk_type::NWKMAP_DEV_UNKNOWN;
+}
+
+nal::Nwk_relation mp::get_relationship_from_string(const std::string& _realationship)
+{
+    if (_realationship == "Sibling") {
+        return nal::Nwk_relation::NWKMAP_RELATION_SIBLING;
+    }
+    else if (_realationship == "Parent") {
+        return nal::Nwk_relation::NWKMAP_RELATION_PARENT;
+    }
+    else if (_realationship == "Child") {
+        return nal::Nwk_relation::NWKMAP_RELATION_CHILD;
+    }
+    else if (_realationship == "Prev_child") {
+        return nal::Nwk_relation::NWKMAP_RELATION_PREV_CHILD;
+    }
+    return nal::Nwk_relation::NWKMAP_RELATION_UNKNOWN;
 }
 
 //uint64_t mp::convert_hex_string_to_uint(const std::string& str_hex)
@@ -212,3 +267,5 @@ Node* mp::Map_parser::find(const std::string& _id) {
 //        throw std::invalid_argument("Invalid hex number");
 //    }
 //}
+
+

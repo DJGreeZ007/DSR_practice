@@ -5,6 +5,7 @@
 int main()
 {
     mp::Map_parser map;
-    std::cout << map.init("test.txt") << std::endl;
+    std::cout << map.init("withChild.txt") << std::endl;
+    map.print();
     return 0;
 }
