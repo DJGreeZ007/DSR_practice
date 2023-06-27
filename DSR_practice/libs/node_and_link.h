@@ -24,12 +24,15 @@ namespace nal {
 
     class Node {
     public:
+        static const size_t number_of_devices_to_return = 2;
+
         /* Getters */
         bool get_completed_node() const;
         bool get_label_is_installed() const;
         std::string get_id() const;
         std::string get_label() const;
         std::vector<Link> get_links() const;
+        std::vector<Link> hint(size_t start_index, size_t& total_cnt) const;
 
         /* Setters */
         void set_node(const std::string& _id, const std::uint16_t& _addr, const Nwk_type& _device_type);

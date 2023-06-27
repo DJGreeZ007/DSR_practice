@@ -1,6 +1,7 @@
 ﻿#include "map_parser.h"
 #include <iostream>
 #include <fstream>
+#include <algorithm> //tmp
 
 int main()
 {

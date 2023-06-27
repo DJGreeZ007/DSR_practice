@@ -30,6 +30,15 @@ std::vector<Link> nal::Node::get_links() const
     return links;
 }
 
+std::vector<Link> nal::Node::hint(size_t start_index, size_t& total_cnt) const
+{
+    total_cnt = links.size();
+    if (start_index >= total_cnt) {
+        return std::vector<Link>{};
+    }
+    return std::vector<Link>{begin(links) + start_index, begin(links) + std::min(start_index + number_of_devices_to_return, total_cnt)};
+}
+
 void nal::Node::set_node(const std::string& _id, const std::uint16_t& _addr, const Nwk_type& _device_type)
 {
     this->id = _id;
