@@ -30,7 +30,7 @@ namespace mp {
 		map_parser_error init(std::string filename);
 	};
 
-	uint64_t convert_hex_string_to_uint(const std::string& str_hex);
+	//uint64_t convert_hex_string_to_uint(const std::string& str_hex);
 }
 
 #endif /* MAP_PARSER_H */
