@@ -7,6 +7,7 @@ int main()
 {
     mp::Map_parser map_p{};
     std::cout << map_p.init("withChild.txt") << std::endl;
+
     /*for (auto& it : map_p.get_nodes()) {
         std::cout << it.id << " " << it.addr << std::endl;
     }
@@ -46,7 +47,7 @@ int main()
                 net_by.add(list);
             ++i;
         } while (i * number_of_devices_to_return < count);
-    /* Switching the pointer */ 
+    /* Switching the pointer */  
     } while (net_by.next());
     net_by.print();
     return 0;
