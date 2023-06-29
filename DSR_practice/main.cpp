@@ -46,7 +46,7 @@ int main()
                 net_by.add(list);
             ++i;
         } while (i * number_of_devices_to_return < count);
-    /* Switching the pointer */ 
+    /* Switching the pointer */  
     } while (net_by.next());
     net_by.print();
     return 0;
