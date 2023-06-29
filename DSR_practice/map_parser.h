@@ -47,6 +47,8 @@ namespace mp {
         const std::vector<Link>& get_links() const;             /* Get a list of links */
 
     private:
+        void clear_nodes_and_links();
+
         std::vector<Node> nodes{};                              /* The list of nodes */
         std::vector<Link> links{};                              /* The list if links */
     };
