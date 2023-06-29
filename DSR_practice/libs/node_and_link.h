@@ -30,6 +30,9 @@ namespace nal {
         std::string get_id() const;
         std::uint16_t get_addr() const;
         Nwk_type get_type() const;
+        const std::vector<Link>& get_links() const;
+
+        void add_link(const Link& link);
 
         Node(const std::string& _id, const std::uint16_t& _addr, const Nwk_type& _device_type);
 
@@ -44,10 +47,11 @@ namespace nal {
     class Link {
     public:
         /* Getters */
-        std::string get_id() const;
         Node* const get_node() const;
+        std::uint8_t get_lqi() const;
+        Nwk_relation get_relation() const;
 
-        Link(Node* _node, const std::uint8_t _lqi, const Nwk_relation& _relation);
+        Link(Node* _node, const std::uint8_t& _lqi, const Nwk_relation& _relation);
     private:
         Node* node{};                                                    /* Link to the node */
         std::uint8_t lqi{};                                              /* Link Quality Indication */
