@@ -27,6 +27,15 @@ const std::vector<Link>& nal::Node::get_links() const
     return links;
 }
 
+std::vector<Link> nal::Node::send_request(const size_t& start_index, size_t& total_cnt) const
+{
+    total_cnt = links.size();
+    if (start_index >= total_cnt) {
+        return std::vector<Link>{};
+    }
+    return std::vector<Link>{begin(links) + start_index, begin(links) + std::min(start_index + number_of_devices_to_return, total_cnt)};
+}
+
 void nal::Node::add_link(const Link& link)
 {
     links.push_back(link);

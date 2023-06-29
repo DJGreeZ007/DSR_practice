@@ -31,6 +31,7 @@ namespace nal {
         std::uint16_t get_addr() const;
         Nwk_type get_type() const;
         const std::vector<Link>& get_links() const;
+        std::vector<Link> send_request(const size_t& start_index, size_t& total_cnt) const;
 
         void add_link(const Link& link);
 
