@@ -6,62 +6,53 @@
 
 /* C++ libs */
 #include <vector>
-#include <fstream>
-#include <iostream> /* tmp */
-
-using namespace nal;                                         /* Node and Link classes */
 
 namespace mp {
 
     /* Map_parser error */
     enum map_parser_error {
         NO_ERRORS,
-        ERROR_FILE_OPENING,                                  /* Error opening the file */
-        ERROR_READING_FILE_HEADER,                           /* Error reading the file header */
-        ERROR_INCORRECT_DATA_IN_FILE,                        /* Incorrect data in the file */
-        ERROR_ADDRESS_IN_FROM,                               /* Address error in from */
-        ERROR_ADDRESS_IN_TO,                                 /* Address error in to */
-        ERROR_COMMUNICATION_QUALITY_INDICATION,              /* Communication quality indication error */
-        ERROR_INVALID_ADDRESS,                               /* Invalid address */
-        ERROR_INCORRECT_LINKS                                /* Incorrect links */
+        ERROR_FILE_OPENING,                                             /* Error opening the file */
+        ERROR_READING_FILE_HEADER,                                      /* Error reading the file header */
+        ERROR_INCORRECT_DATA_IN_FILE,                                   /* Incorrect data in the file */
+        ERROR_ADDRESS_IN_FROM,                                          /* Address error in from */
+        ERROR_ADDRESS_IN_TO,                                            /* Address error in to */
+        ERROR_COMMUNICATION_QUALITY_INDICATION,                         /* Communication quality indication error */
+        ERROR_INVALID_ADDRESS,                                          /* Invalid address */
+        ERROR_INCORRECT_LINKS                                           /* Incorrect links */
     };
 
-    nal::Nwk_type get_type_from_string(const std::string& _type);
+    struct Node{
+        std::string id{};                                               /* Name to display */
+        std::uint16_t addr{};                                           /* Network address */
+        nal::Nwk_type device_type{ nal::Nwk_type::NWKMAP_DEV_UNKNOWN };
+        Node(const std::string& _id, const std::uint16_t& _addr, const nal::Nwk_type& _device_type);
+    };
 
-    nal::Nwk_relation get_relationship_from_string(const std::string& _realationship);
+    struct Link {
+        std::string from{};
+        std::string to{};
+        std::uint8_t lqi{};
+        nal::Nwk_relation relation{ nal::Nwk_relation::NWKMAP_RELATION_UNKNOWN };
+        Link(const std::string& _from, const std::string& _to, const std::uint8_t& _lqi, nal::Nwk_relation _relation);
+    };
 
     class Map_parser {
     public:
-        map_parser_error init(const std::string& _filename); /* Creating a graph from data in a file */
+        map_parser_error init(const std::string& _filename);    /* Creates lists of nodes and links */
 
-        ~Map_parser() {
-            delete head;
-            for (auto& it : nodes) {
-                delete it;
-            }
-        }
-        /* tmp ======================================================================== */
-        void print() {
-            std::cout << head->get_id() << " : " << head->get_label() << std::endl;
-            for (const Link& link : head->get_links()) {
-                std::cout << "      " << link.get_id() << std::endl;
-            }
-            for (auto& it : nodes) {
-                std::cout << it->get_id() << std::endl;
-                for (const Link& link : it->get_links()) {
-                    std::cout << "      " << link.get_id() << std::endl;
-                }
-            }
-        }
-        /* ============================================================================ */
+        /* Getters */
+        const std::vector<Node>& get_nodes() const;             /* Get a list of nodes */
+        const std::vector<Link>& get_links() const;             /* Get a list of links */
+
     private:
-        Node* head{};                                        /* Reference to the main element, i.e. ZC */
-        std::vector <Node*> nodes{};                         /* List of all nodes. Head is not included in the list */
-        
-        Node* find(const std::string& _id);                  /* Searching for an item in the list */
+        std::vector<Node> nodes{};                              /* The list of nodes */
+        std::vector<Link> links{};                              /* The list if links */
     };
 
-    //uint64_t convert_hex_string_to_uint(const std::string& str_hex);
+    /* Auxiliary functions */
+    nal::Nwk_type get_type_from_string(const std::string& _type);
+    nal::Nwk_relation get_relationship_from_string(const std::string& _realationship);
 }
 
 #endif /* MAP_PARSER_H */

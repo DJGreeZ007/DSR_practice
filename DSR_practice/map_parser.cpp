@@ -1,12 +1,22 @@
 ﻿#include "map_parser.h"
 
-using namespace mp;
+/* C++ libs */
+#include <limits>       /* Maximum value of variables */
+#include <cmath>        /* Pow */
+#include <string>       /* Stoul */
+#include <fstream>      /* Ifstream */
 
-#include <iostream>   /* Delete */
-#include <limits>     /* Maximum value of variables */
-#include <cmath>      /* Pow */
-#include <string>     /* Stoul */
+using namespace mp;     /* Namespace of the Map_parser class */
 
+/* Node */
+mp::Node::Node(const std::string& _id, const std::uint16_t& _addr, const nal::Nwk_type& _device_type):
+    id{ _id }, addr{ _addr }, device_type{ _device_type } {}
+
+/* Link */
+mp::Link::Link(const std::string& _from, const std::string& _to, const std::uint8_t& _lqi, nal::Nwk_relation _relation):
+    from{ _from }, to{ _to }, lqi{ _lqi }, relation{ _relation } {}
+
+/* Parser Class */
 map_parser_error Map_parser::init(const std::string& _filename)
 {
 
@@ -24,7 +34,6 @@ map_parser_error Map_parser::init(const std::string& _filename)
     if (!std::getline(file, line)) {
         return ERROR_READING_FILE_HEADER;  /* Error reading the file header */
     }
-
 
     /* Parsing */
     while (std::getline(file, line)) {
@@ -62,8 +71,7 @@ map_parser_error Map_parser::init(const std::string& _filename)
 
         /* From */
         std::string from{};
-        bool zc_flag = data_in_row[0].substr(0, 4) == "SGW-";           /* flag for tracking SWG- signatures */
-        if (!(zc_flag) && data_in_row[0].substr(0, 3) != "zb.") {
+        if (data_in_row[0].substr(0, 4) != "SGW-" && data_in_row[0].substr(0, 3) != "zb.") {
             return ERROR_ADDRESS_IN_FROM;
         }
         from = data_in_row[0];
@@ -109,84 +117,28 @@ map_parser_error Map_parser::init(const std::string& _filename)
         /* Relationship */
         nal::Nwk_relation relation = get_relationship_from_string(data_in_row[5]);
 
-        /* Right id */
-        Node* right_dev{};
-        /* Coordinator */
-        if (device_type == nal::Nwk_type::NWKMAP_DEV_COORDINATOR) {
-            /* Checking head */
-            if (find(to)) {
-                return ERROR_INCORRECT_LINKS;
-            }
+        /* Adding a Node */
+        nodes.push_back(Node{ to, addr, device_type });
 
-            if (head) {
-                if (!head->get_completed_node()) {              /* The coordinator is installed and not initialized */
-                    head->set_node(to, addr, device_type);      /* Adding information to the coordinator */
-                }
-            }
-            else {
-                head = new Node{ to, addr, device_type };       /* Creating a Coordinator */
-            }
-            right_dev = head;                                   /* Saving the node as a header */
-        }
-        /* Other devices */
-        else {
-            /* Checking head */
-            if (head && head->get_id() == to) {
-                return ERROR_INCORRECT_LINKS;
-            }
-
-            right_dev = find(to);
-            if (right_dev) {
-                if (!right_dev->get_completed_node()) {         /* The device is not installed */
-                    right_dev->set_node(to, addr, device_type); /* Adding information to the device */
-                }
-            }
-            else {
-                right_dev = new Node{ to, addr, device_type };  /* Creating a device */
-                nodes.push_back(right_dev);                     /* Saving a node in a list */
-            }
-        }
-
-        /* Left id */
-        Node* left_dev{};
-        /* Coordinator */
-        if (zc_flag) {                                          /* The left device is the header */
-            if (!head) {
-                head = new Node{};                              /* Creating a Coordinator */
-            }
-            if (!head->get_label_is_installed()) {              /* The coordinator is installed but the label field is not initialized */
-                head->set_label(from);                          /* Adding information to the coordinator */
-            }
-            left_dev = head;
-        }
-        /* Other devices */
-        else {
-            left_dev = find(from);
-            if (!left_dev) {
-                left_dev = new Node{ from };                    /* Creating a new node */
-                nodes.push_back(left_dev);                      /* Saving a node in a list */
-            }
-        }
-
-        /* Links */
-        if (!left_dev->add_links(Link{ right_dev, lqi, relation })) {
-            return ERROR_INCORRECT_LINKS;
-        }
+        /* Adding a Link */
+        links.push_back(Link{ from, to, lqi, relation });
     }
-
     file.close();
     return NO_ERRORS;
 }
 
-Node* mp::Map_parser::find(const std::string& _id) {
-    for (auto& it : nodes) {
-        if (*it == _id) {
-            return it;
-        }
-    }
-    return nullptr;
+/* Getters */
+const std::vector<Node>& mp::Map_parser::get_nodes() const
+{
+    return nodes;
 }
 
+const std::vector<Link>& mp::Map_parser::get_links() const
+{
+    return links;
+}
+
+/* Auxiliary functions */
 nal::Nwk_type mp::get_type_from_string(const std::string& _type)
 {
     if (_type == "ZR") {
@@ -217,55 +169,5 @@ nal::Nwk_relation mp::get_relationship_from_string(const std::string& _realation
     }
     return nal::Nwk_relation::NWKMAP_RELATION_UNKNOWN;
 }
-
-//uint64_t mp::convert_hex_string_to_uint(const std::string& str_hex)
-//{
-//    std::string hex = str_hex;
-//    if (hex.size() >= 2) {
-//        hex.erase(0, 2); /* Removing uppercase characters */
-//        std::uint64_t result{};
-//        for (int i = hex.size() - 1; i >= 0; --i) {
-//            int value;
-//            switch (hex[i])
-//            {
-//            case '0':
-//            case '1':
-//            case '2':
-//            case '3':
-//            case '4':
-//            case '5':
-//            case '6':
-//            case '7':
-//            case '8':
-//            case '9':
-//                value = hex[i] - '0';
-//                break;
-//            case 'a':
-//            case 'b':
-//            case 'c':
-//            case 'd':
-//            case 'e':
-//            case 'f':
-//                value = hex[i] - 'a' + 10;
-//                break;
-//            case 'A':
-//            case 'B':
-//            case 'C':
-//            case 'D':
-//            case 'E':
-//            case 'F':
-//                value = hex[i] - 'A' + 10;
-//                break;
-//            default:
-//                throw std::invalid_argument("Invalid hex number");
-//            }
-//            result += value * std::pow(16, hex.size() - i - 1);
-//        }
-//        return result;
-//    }
-//    else {
-//        throw std::invalid_argument("Invalid hex number");
-//    }
-//}
 
 
