@@ -15,6 +15,7 @@ namespace mp {
         ERROR_FILE_OPENING,                                             /* Error opening the file */
         ERROR_READING_FILE_HEADER,                                      /* Error reading the file header */
         ERROR_INCORRECT_DATA_IN_FILE,                                   /* Incorrect data in the file */
+        ERROR_EMPTY_FIELD,                                              /* Empty field */
         ERROR_ADDRESS_IN_FROM,                                          /* Address error in from */
         ERROR_ADDRESS_IN_TO,                                            /* Address error in to */
         ERROR_COMMUNICATION_QUALITY_INDICATION,                         /* Communication quality indication error */
@@ -51,8 +52,11 @@ namespace mp {
     };
 
     /* Auxiliary functions */
+    map_parser_error get_data_from_line(std::vector<std::string>& _data_in_row, std::string _line);
     nal::Nwk_type get_type_from_string(const std::string& _type);
     nal::Nwk_relation get_relationship_from_string(const std::string& _realationship);
+    map_parser_error get_lqi_from_string(std::uint8_t& _lqi, const std::string& _str_lqi);
+    map_parser_error get_addr_from_string(std::uint16_t& _addr, const std::string& _str_addr);
 }
 
 #endif /* MAP_PARSER_H */

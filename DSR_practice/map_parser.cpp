@@ -19,6 +19,7 @@ mp::Link::Link(const std::string& _from, const std::string& _to, const std::uint
 /* Parser Class */
 map_parser_error Map_parser::init(const std::string& _filename)
 {
+    map_parser_error code_error;           /* Getting the error code from auxiliary functions */
 
     /* Open file */
     std::ifstream file(_filename);
@@ -41,32 +42,11 @@ map_parser_error Map_parser::init(const std::string& _filename)
             return ERROR_INCORRECT_DATA_IN_FILE;
         }
 
-        /* Delete all space */
-        line.erase(std::remove_if(begin(line), end(line), [](char symb) {return symb == ' '; }), end(line));
-
         std::vector<std::string> data_in_row;
-        const size_t number_of_columns = 6;                            /* The amount of data in a row */
-        for (size_t i = 0; i < number_of_columns; ++i) {
-
-            /* Check symb | */
-            if (std::find(begin(line), end(line), '|') != begin(line)) {
-                return ERROR_INCORRECT_DATA_IN_FILE;
-            }
-            /* Delete first | */
-            line.erase(0, 1);
-
-            /* Get element */
-            auto iter = std::find(begin(line), end(line), '|');
-            std::string data = line.substr(0, iter-begin(line));
-            data_in_row.push_back(data);
-
-            /* Delete saved data in the line */
-            line.erase(begin(line), iter);
-        }
-
-        /* Check last symb | */
-        if (std::find(begin(line), end(line), '|') == end(line)) {
-            return ERROR_INCORRECT_DATA_IN_FILE;
+        /* Reading data from a string */
+        code_error = get_data_from_line(data_in_row, line);
+        if (code_error > 0) {
+            return code_error;
         }
 
         /* From */
@@ -85,30 +65,16 @@ map_parser_error Map_parser::init(const std::string& _filename)
 
         /* Communication quality indication */
         std::uint8_t lqi;
-        try {
-            unsigned long tmp = std::stoul(data_in_row[2]);
-            if (tmp > std::numeric_limits<std::uint8_t>::max() || tmp <= 0) {
-                throw std::invalid_argument("Communication quality indication error");
-            }
-            lqi = tmp;
-        }
-        catch (...) {
-            return ERROR_COMMUNICATION_QUALITY_INDICATION;
+        code_error = get_lqi_from_string(lqi, data_in_row[2]);
+        if (code_error > 0) {
+            return code_error;
         }
 
         /* Network address */
         std::uint16_t addr;
-        try {
-            size_t pos{};                                       /* Position in the address bar */
-            const int base = 16;                                /* Hexadecimal base */
-            unsigned long tmp = std::stoul(data_in_row[3], &pos, base);
-            if (tmp > std::numeric_limits<std::uint16_t>::max()) {
-                throw std::invalid_argument("Invalid address");
-            }
-            addr = tmp;
-        }
-        catch (...) {
-            return ERROR_INVALID_ADDRESS;
+        code_error = get_addr_from_string(addr, data_in_row[3]);
+        if (code_error > 0) {
+            return code_error;
         }
 
         /* Type */
@@ -168,6 +134,78 @@ nal::Nwk_relation mp::get_relationship_from_string(const std::string& _realation
         return nal::Nwk_relation::NWKMAP_RELATION_PREV_CHILD;
     }
     return nal::Nwk_relation::NWKMAP_RELATION_UNKNOWN;
+}
+
+map_parser_error mp::get_data_from_line(std::vector<std::string>& _data_in_row, std::string _line) {
+    /* Delete all space */
+    _line.erase(std::remove_if(begin(_line), end(_line), [](char symb) {return symb == ' '; }), end(_line));
+
+    const size_t number_of_columns = 6;                            /* The amount of data in a row */
+    for (size_t i = 0; i < number_of_columns; ++i) {
+
+        /* Check symb | */
+        if (std::find(begin(_line), end(_line), '|') != begin(_line)) {
+            _data_in_row.clear();
+            return ERROR_INCORRECT_DATA_IN_FILE;
+        }
+        /* Delete first | */
+        _line.erase(0, 1);
+
+        /* Get element */
+        auto iter = std::find(begin(_line), end(_line), '|');
+        if (iter == end(_line)) {
+            _data_in_row.clear();
+            return ERROR_INCORRECT_DATA_IN_FILE;
+        }
+        std::string data = _line.substr(0, iter - begin(_line));
+        if (data.empty()) {
+            _data_in_row.clear();
+            return ERROR_EMPTY_FIELD;
+        }
+        _data_in_row.push_back(data);
+
+        /* Delete saved data in the line */
+        _line.erase(begin(_line), iter);
+    }
+
+    /* Check last symb | */
+    if (std::find(begin(_line), end(_line), '|') == end(_line)) {
+        _data_in_row.clear();
+        return ERROR_INCORRECT_DATA_IN_FILE;
+    }
+    return NO_ERRORS;
+}
+
+map_parser_error mp::get_lqi_from_string(std::uint8_t& _lqi, const std::string& _str_lqi)
+{
+    try {
+        unsigned long tmp = std::stoul(_str_lqi);
+        if (tmp > std::numeric_limits<std::uint8_t>::max() || tmp <= 0) {
+            throw std::invalid_argument("Communication quality indication error");
+        }
+        _lqi = tmp;
+    }
+    catch (...) {
+        return ERROR_COMMUNICATION_QUALITY_INDICATION;
+    }
+    return NO_ERRORS;
+}
+
+map_parser_error mp::get_addr_from_string(std::uint16_t& _addr, const std::string& _str_addr)
+{
+    try {
+        size_t pos{};                                       /* Position in the address bar */
+        const int base = 16;                                /* Hexadecimal base */
+        unsigned long tmp = std::stoul(_str_addr, &pos, base);
+        if (tmp > std::numeric_limits<std::uint16_t>::max()) {
+            throw std::invalid_argument("Invalid address");
+        }
+        _addr = tmp;
+    }
+    catch (...) {
+        return ERROR_INVALID_ADDRESS;
+    }
+    return NO_ERRORS;
 }
 
 
