@@ -3,6 +3,7 @@
 
 /* Libs */
 #include "libs/node_and_link.h"
+#include "interface_nw_map.h"
 
 /* C++ libs */
 #include <vector>
@@ -13,7 +14,7 @@ namespace nwbp {
 		NO_ERROR,
 		ERROR_HEAD_IS_EMPTY					/* Head is empty */
 	};
-	class Network_bypass {
+	class Network_bypass:public I  {
 	public:
 		network_bypass_error init(nal::Node* _head);
 
