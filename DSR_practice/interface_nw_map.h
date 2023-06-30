@@ -8,14 +8,14 @@ enum class nwkmap_relation_t {
    CHILD,
    SIBLING,
    PREV_CHILD,
-   UNKNOWN,
+   UNKNOWN
 };
 
 enum class nwkmap_dev_type_t {
    COORDINATOR,
    ROUTER,
    END_DEVICE,
-   UNKNOWN,
+   UNKNOWN
 };
 
 struct nwkmap_dev_t
