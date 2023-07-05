@@ -7,6 +7,7 @@
 /* C++ libs */
 #include <vector>
 #include <iostream> /* TEST  Will be deleted*/
+#include <functional>
 
 namespace nw {
 
@@ -28,6 +29,8 @@ namespace nw {
 
         /* Getters */
         nal::Node* get_head();
+        std::vector<nal::Link> get_neighbors(const std::string& _id, const size_t& start_index, size_t& total_cnt, bool& found);
+        std::string get_label();
 
         /* TEST  Will be deleted*/
         void print () const{
@@ -53,7 +56,7 @@ namespace nw {
         std::vector <nal::Node*> nodes;     /* All nodes of the network */
     };
 
-    network_error search_and_verif_in_node_link(bool& found, const nal::Node* const _node, const std::string& _id, const std::uint8_t& _lqi,
-                                                const nal::Nwk_relation& _relation);
+    network_error search_and_verif_in_node_link(const nal::Node* const _node, const std::string& _id, const std::uint8_t& _lqi, 
+                                                const nal::Nwk_relation& _relation, bool& found);
 }
 #endif /* NETWORK_H */

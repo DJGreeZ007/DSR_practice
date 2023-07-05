@@ -27,9 +27,26 @@ nal::Node* nw::Network::get_head()
     return head;
 }
 
+std::vector<nal::Link> nw::Network::get_neighbors(const std::string& _id, const size_t& start_index, size_t& total_cnt, bool& found)
+{
+    nal::Node* found_node = search_for_node_by_id(_id);
+    found = false;
+    if (!found_node) {
+        return std::vector<nal::Link>{};
+    }
+    found = true;
+    std::vector<nal::Link> result = found_node->get_neighbors(start_index, total_cnt);
+    return result;
+}
+
+std::string nw::Network::get_label()
+{
+    return label;
+}
+
 nal::Node* nw::Network::search_for_node_by_id(const std::string& _id) const
 {
-    auto it = std::find_if(begin(nodes), end(nodes), [&_id](nal::Node* _node) {
+    auto it = std::find_if(begin(nodes), end(nodes), [&_id](nal::Node* _node)->bool {
         return _node->get_id() == _id;
         });
     if (it == end(nodes)) {
@@ -100,6 +117,7 @@ network_error nw::Network::adding_links(const std::vector<mp::Link>& _links)
         /* If it's a coordinator */
         nal::Node* from{};
         if (it.from.substr(0, 4) == "SGW-") {
+            checking_and_installing_label(it.from);
             /* Checking that the coordinator has been declared */
             if (!head) {
                 return ERROR_COORDINATOR_WAS_NOT_ANNOUNCED;
@@ -115,7 +133,7 @@ network_error nw::Network::adding_links(const std::vector<mp::Link>& _links)
 
         nal::Node* to = search_for_node_by_id(it.to);
         bool found{};
-        code_error = search_and_verif_in_node_link(found, from, it.to, it.lqi, it.relation);
+        code_error = search_and_verif_in_node_link(from, it.to, it.lqi, it.relation, found);
         if (code_error > 0) {
             return code_error;
         }
@@ -144,7 +162,7 @@ network_error nw::Network::checking_and_installing_label(const std::string& _lab
 }
 
 
-network_error nw::search_and_verif_in_node_link(bool& found, const nal::Node* const _node, const std::string& _id, const std::uint8_t& _lqi, const nal::Nwk_relation& _relation)
+network_error nw::search_and_verif_in_node_link(const nal::Node* const _node, const std::string& _id, const std::uint8_t& _lqi, const nal::Nwk_relation& _relation, bool& found)
 {
     /*  Passage through all neighbors */
     for (auto& it : _node->get_links()) {

@@ -27,7 +27,7 @@ const std::vector<Link>& nal::Node::get_links() const
     return links;
 }
 
-std::vector<Link> nal::Node::send_request(const size_t& start_index, size_t& total_cnt) const
+std::vector<Link> nal::Node::get_neighbors(const size_t& start_index, size_t& total_cnt) const
 {
     total_cnt = links.size();
     if (start_index >= total_cnt) {
@@ -64,3 +64,4 @@ Nwk_relation nal::Link::get_relation() const
 
 nal::Link::Link(Node* _node, const std::uint8_t& _lqi, const Nwk_relation& _relation) :
     node{ _node }, lqi{ _lqi }, relation{ _relation } {}
+

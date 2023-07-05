@@ -33,7 +33,6 @@ map_parser_error Map_parser::init(const std::string& _filename)
     /* Skipping header lines */
     std::getline(file, line);
     if (!std::getline(file, line)) {
-        file.close();
         return ERROR_READING_FILE_HEADER;  /* Error reading the file header */
     }
 
@@ -41,7 +40,6 @@ map_parser_error Map_parser::init(const std::string& _filename)
     while (std::getline(file, line)) {
         if (line.size() != 102) {
             clear_nodes_and_links();
-            file.close();
             return ERROR_INCORRECT_DATA_IN_FILE;
         }
 
@@ -50,7 +48,6 @@ map_parser_error Map_parser::init(const std::string& _filename)
         code_error = get_data_from_line(data_in_row, line);
         if (code_error > 0) {
             clear_nodes_and_links();
-            file.close();
             return code_error;
         }
 
@@ -58,7 +55,6 @@ map_parser_error Map_parser::init(const std::string& _filename)
         std::string from{};
         if (data_in_row[0].substr(0, 4) != "SGW-" && data_in_row[0].substr(0, 3) != "zb.") {
             clear_nodes_and_links();
-            file.close();
             return ERROR_ADDRESS_IN_FROM;
         }
         from = data_in_row[0];
@@ -67,7 +63,6 @@ map_parser_error Map_parser::init(const std::string& _filename)
         std::string to;
         if (data_in_row[1].substr(0, 3) != "zb.") {
             clear_nodes_and_links();
-            file.close();
             return ERROR_ADDRESS_IN_TO;
         }
         to = data_in_row[1];
@@ -77,7 +72,6 @@ map_parser_error Map_parser::init(const std::string& _filename)
         code_error = get_lqi_from_string(lqi, data_in_row[2]);
         if (code_error > 0) {
             clear_nodes_and_links();
-            file.close();
             return code_error;
         }
 
@@ -86,7 +80,6 @@ map_parser_error Map_parser::init(const std::string& _filename)
         code_error = get_addr_from_string(addr, data_in_row[3]);
         if (code_error > 0) {
             clear_nodes_and_links();
-            file.close();
             return code_error;
         }
 
@@ -102,7 +95,6 @@ map_parser_error Map_parser::init(const std::string& _filename)
         /* Adding a Link */
         links.push_back(Link{ from, to, lqi, relation });
     }
-    file.close();
     return NO_ERRORS;
 }
 
