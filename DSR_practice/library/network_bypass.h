@@ -58,8 +58,6 @@ namespace nwbp {
 			}
 		}
 	private:
-		//std::string converting_data_to_dot (const Node& node);
-		//std::string converting_data_to_dot(const Link& link);
 
 		size_t iterator_per_neighbor_for_head{};
 		/* The maximum value will go away after adding the last neighbor head */
