@@ -79,9 +79,9 @@ std::string dfg::converting_data_to_dot(const nwbp::Node& _node, const std::stri
     /* Inserting a device_id */
     result += _node.id + "\"";
     if (_node.device_type == nwkmap_dev_type_t::COORDINATOR) {
-        result += " [label = \"" + _label + "\"];";
+        result += " [label = \"" + _label + "\"]";
     }
-    result += ';\n';
+    result += ";\n";
     return result;
 }
 
