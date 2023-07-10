@@ -49,7 +49,7 @@ namespace nw {
         network_error checking_and_installing_label(const std::string& _label);         /* Checking and installing label */
         void clear_nodes();                                                             /* Deleting all nodes */
         nal::Node* search_for_node_by_id(const std::string& _id) const;
-        network_error сhecking_data_in_node(const nal::Node* const _node, const std::uint16_t& _addr, const nal::Nwk_type& _device_type) const;
+        network_error сhecking_data_in_node(const nal::Node& _node, const std::uint16_t& _addr, const nal::Nwk_type& _device_type) const;
 
         std::string label{};                /* Name ZC */
         nal::Node* head{};                  /* Pointer to the coordinator */

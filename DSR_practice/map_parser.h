@@ -2,7 +2,7 @@
 #define MAP_PARSER_H
 
 /* Libs */
-#include "libs/node_and_link.h"
+#include "node_and_link.h"
 
 /* C++ libs */
 #include <vector>

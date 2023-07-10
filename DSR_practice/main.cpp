@@ -1,6 +1,6 @@
 ﻿#include "map_parser.h"
 #include "network.h"
-#include "main_library/network_bypass.h"
+#include "library/network_bypass.h"
 #include <iostream>
 
 std::vector<nwkmap_dev_t> converting_link_to_dev_t(std::vector<nal::Link>& _links);
@@ -31,21 +31,21 @@ int main()
 
     nwbp::Network_bypass net_by{};
     size_t out_idx{};
-    uint32_t ans{};
+    uint32_t start_idx{};
     bool found{};
-    std::string id1 = net_by.hint(ans);
+    std::string id1 = net_by.hint(start_idx);
     std::vector < nal::Link > links = net.get_neighbors(net.get_head()->get_id(), 0, out_idx, found);
     std::vector < nwkmap_dev_t > devices = converting_link_to_dev_t(links);
     /* Initial neighbors of head */
     net_by.add(net.get_label().c_str(), 0, out_idx, devices);
 
-    std::string id = net_by.hint(ans);
+    std::string id = net_by.hint(start_idx);
     while (!id.empty()) {
         bool found;
-        std::vector < nal::Link > links = net.get_neighbors(id, ans, out_idx, found);
+        std::vector < nal::Link > links = net.get_neighbors(id, start_idx, out_idx, found);
         std::vector < nwkmap_dev_t > devices = converting_link_to_dev_t(links);
-        net_by.add(id.c_str(), ans, out_idx, devices);
-        id = net_by.hint(ans);
+        net_by.add(id.c_str(), start_idx, out_idx, devices);
+        id = net_by.hint(start_idx);
     }
 
     net_by.save_dot("output.dot");

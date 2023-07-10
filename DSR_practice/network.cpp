@@ -46,7 +46,7 @@ std::string nw::Network::get_label()
 
 nal::Node* nw::Network::search_for_node_by_id(const std::string& _id) const
 {
-    auto it = std::find_if(begin(nodes), end(nodes), [&_id](nal::Node* _node)->bool {
+    auto it = std::find_if(begin(nodes), end(nodes), [&_id](nal::Node* _node) {
         return _node->get_id() == _id;
         });
     if (it == end(nodes)) {
@@ -55,13 +55,9 @@ nal::Node* nw::Network::search_for_node_by_id(const std::string& _id) const
     return *it;
 }
 
-network_error nw::Network::сhecking_data_in_node(const nal::Node* const _node, const std::uint16_t& _addr, const nal::Nwk_type& _device_type) const
+network_error nw::Network::сhecking_data_in_node(const nal::Node& _node, const std::uint16_t& _addr, const nal::Nwk_type& _device_type) const
 {
-    if (!_node) {
-        return ERROR_EMPTY_ADDR_IS_CHECKED;
-    }
-
-    if (_node->get_addr() != _addr || _node->get_type() != _device_type) {
+    if (_node.get_addr() != _addr || _node.get_type() != _device_type) {
         return ERROR_SAME_NODE_WITH_DIFF_DATA;
     }
 
@@ -89,7 +85,7 @@ network_error nw::Network::adding_nodes(const std::vector<mp::Node>& _nodes)
     for (const mp::Node& it : _nodes) {
         nal::Node* node = search_for_node_by_id(it.id);
         if (node) {
-            code_error = сhecking_data_in_node(node, it.addr, it.device_type);
+            code_error = сhecking_data_in_node(*node, it.addr, it.device_type);
             if (code_error > 0) {
                 clear_nodes();
                 return code_error;
