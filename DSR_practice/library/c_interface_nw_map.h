@@ -9,7 +9,7 @@ typedef enum {
    NWKMAP_RELATION_SIBLING,
    NWKMAP_RELATION_PREV_CHILD,
    NWKMAP_RELATION_UNKNOWN,
-} nwkmap_relation_t;
+} c_nwkmap_relation_t;
 
 typedef enum {
    NWKMAP_DEV_COORDINATOR,
@@ -23,20 +23,16 @@ typedef struct
   const char* dev_id;   /* Name to display */
   uint8_t lqi;          /* Link Quality Indication */
   uint16_t nwk_addr;    /* Network address */
-  nwkmap_relation_t relationship;
+  c_nwkmap_relation_t relationship;
   nwkmap_type_t device_type;
-} nwkmap_dev_t;
-
-typedef struct {
-   // TODO: Add your context here
-} nwkmap_ctx_t;
+} c_nwkmap_dev_t;
 
 
 /**
  * @brief Initializes the network topology map context.
- * @param[in,out] ctx The context to be initialized.
+ * @param[in,out] context_id Id per context.
  */
-void nwkmap_init(nwkmap_ctx_t *ctx);
+void nwkmap_init(unsigned int& context_id);
 
 /**
  * @brief Provides a hint for the next device to be queried for network topology information.
@@ -51,7 +47,7 @@ void nwkmap_init(nwkmap_ctx_t *ctx);
  * @note The returned device ID should be used to establish the relationship between the
  * devices added to the map using `nwkmap_add`.
  */
-char *nwkmap_hint(nwkmap_ctx_t *ctx, uint32_t *out_start_idx);
+char *nwkmap_hint(const unsigned int& context_id, uint32_t &out_start_idx);
 
 /**
  * @brief Adds information about network devices to the topology map.
@@ -63,14 +59,19 @@ char *nwkmap_hint(nwkmap_ctx_t *ctx, uint32_t *out_start_idx);
  * @param[in] devices   An array of network devices to be added to the map.
  * @param[in] size      The size of the devices array.
  */
-void nwkmap_add(nwkmap_ctx_t *ctx, const char *dev_id,
+void nwkmap_add(const unsigned int& context_id, const char *dev_id,
                 uint8_t start_idx, uint8_t total_cnt,
-                nwkmap_dev_t *devices, uint8_t size);
+                c_nwkmap_dev_t *devices, uint8_t size);
+
+
+void nwkmap_exit(const unsigned int& context_id);
+
 
 /**
  * @brief Saves the network topology map in the DOT format to a file.
  * @param[in] out_filename The name of the file to save the DOT representation of the topology map to.
  */
-void nwkmap_save_dot(const char out_filename);
+
+void nwkmap_save_dot(const unsigned int& context_id, const char out_filename);
 
 #endif /* C_NWKMAP_H_ */

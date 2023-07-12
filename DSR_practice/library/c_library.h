@@ -1,28 +1,28 @@
 #ifndef C_LIBRARY_H
 #define C_LIBRARY_H
 
-#ifdef __cplusplus
-extern "C" {
-#endif
 
-	/* libs */
-	#include "network_bypass.h"
-	#include "c_interface_nw_map.h"
+/* libs */
+#include "network_bypass.h"
+#include "c_interface_nw_map.h"
 
-	static nwbp::Network_bypass net_by{};
+/* c++ libs */
+#include <vector>
+#include <algorithm>	/* std::find */
+#include <mutex>
 
-	void nwkmap_init(nwkmap_ctx_t* ctx);
+static std::vector<nwbp::Network_bypass *> net_bypasses{};
+static std::mutex mutex;        /* Thread-safe access to map */
 
-	char* nwkmap_hint(nwkmap_ctx_t* ctx, uint32_t* out_start_idx);
+void nwkmap_init(unsigned int& context_id);
 
-	void nwkmap_add(nwkmap_ctx_t* ctx, const char* dev_id,
-		uint8_t start_idx, uint8_t total_cnt,
-		nwkmap_dev_t* devices, uint8_t size);
+char* nwkmap_hint(const unsigned int& context_id, uint32_t& out_start_idx);
 
-	void nwkmap_save_dot(const char out_filename);
+void nwkmap_add(const unsigned int& context_id, const char* dev_id,
+    uint8_t start_idx, uint8_t total_cnt,
+    c_nwkmap_dev_t* devices, uint8_t size);
+    
 
-#ifdef __cplusplus
-}
-#endif
+void nwkmap_save_dot(const unsigned int& context_id, const char out_filename);
 
 #endif /* C_LIBRARY_H */

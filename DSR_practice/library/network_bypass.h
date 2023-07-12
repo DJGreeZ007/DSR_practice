@@ -44,6 +44,11 @@ namespace nwbp {
 
 		void save_dot(const std::string& out_filename);
 
+		Network_bypass() = default;
+
+		/* Delete constructor */
+		Network_bypass(const Network_bypass&) = delete;
+		Network_bypass(const Network_bypass&&) = delete;
 
 		/* TMP */
 		void print() {
