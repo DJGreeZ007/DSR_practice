@@ -1,4 +1,5 @@
 #include "dot_file_generator.h"
+#include <fstream>
 
 using namespace dfg;
 

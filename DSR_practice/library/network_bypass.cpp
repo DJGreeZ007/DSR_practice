@@ -1,9 +1,9 @@
 #include "network_bypass.h"
 #include "dot_file_generator.h"
+
 using namespace nwbp;
 
-
-
+/* Interface functions */
 std::string nwbp::Network_bypass::hint(uint32_t& out_start_idx)
 {
     out_start_idx = 0;
