@@ -2,11 +2,17 @@
 #include "network.h"
 #include "library/network_bypass.h"
 #include <iostream>
+#include "library/c_library.h"
 
 std::vector<inwmap::nwkmap_dev_t> converting_link_to_dev_t(std::vector<nal::Link>& _links);
 
 int main()
 {
+    unsigned int con{};
+    nwkmap_init(con);
+    uint32_t indx{};
+    const char* msg = nwkmap_hint(con, indx);
+    nwkmap_exit(con);
     mp::Map_parser map_p{};
     size_t error_code = map_p.init("withSubChild.txt");
     if (!error_code) {
