@@ -47,7 +47,7 @@ void nwkmap_init(unsigned int& context_id);
  * @note The returned device ID should be used to establish the relationship between the
  * devices added to the map using `nwkmap_add`.
  */
-char *nwkmap_hint(const unsigned int& context_id, uint32_t &out_start_idx);
+const char *nwkmap_hint(const unsigned int& context_id, uint32_t &out_start_idx);
 
 /**
  * @brief Adds information about network devices to the topology map.

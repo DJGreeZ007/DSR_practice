@@ -3,7 +3,7 @@
 #include "library/network_bypass.h"
 #include <iostream>
 
-std::vector<nwkmap_dev_t> converting_link_to_dev_t(std::vector<nal::Link>& _links);
+std::vector<inwmap::nwkmap_dev_t> converting_link_to_dev_t(std::vector<nal::Link>& _links);
 
 int main()
 {
@@ -35,7 +35,7 @@ int main()
     bool found{};
     std::string id1 = net_by.hint(start_idx);
     std::vector < nal::Link > links = net.get_neighbors(net.get_head()->get_id(), 0, out_idx, found);
-    std::vector < nwkmap_dev_t > devices = converting_link_to_dev_t(links);
+    std::vector < inwmap::nwkmap_dev_t > devices = converting_link_to_dev_t(links);
     /* Initial neighbors of head */
     net_by.add(net.get_label().c_str(), 0, out_idx, devices);
 
@@ -43,7 +43,7 @@ int main()
     while (!id.empty()) {
         bool found;
         std::vector < nal::Link > links = net.get_neighbors(id, start_idx, out_idx, found);
-        std::vector < nwkmap_dev_t > devices = converting_link_to_dev_t(links);
+        std::vector < inwmap::nwkmap_dev_t > devices = converting_link_to_dev_t(links);
         net_by.add(id.c_str(), start_idx, out_idx, devices);
         id = net_by.hint(start_idx);
     }
@@ -52,43 +52,43 @@ int main()
     return 0;
 }
 
-std::vector<nwkmap_dev_t> converting_link_to_dev_t(std::vector<nal::Link>& _links) {
-    std::vector <nwkmap_dev_t> result{};
+std::vector<inwmap::nwkmap_dev_t> converting_link_to_dev_t(std::vector<nal::Link>& _links) {
+    std::vector <inwmap::nwkmap_dev_t> result{};
     for (auto& _link : _links) {
-        nwkmap_relation_t relation_t{};
+        inwmap::nwkmap_relation_t relation_t{};
         switch (_link.get_relation()) {
         case nal::Nwk_relation::NWKMAP_RELATION_CHILD:
-            relation_t = nwkmap_relation_t::CHILD;
+            relation_t = inwmap::nwkmap_relation_t::CHILD;
             break;
         case nal::Nwk_relation::NWKMAP_RELATION_PARENT:
-            relation_t = nwkmap_relation_t::PARENT;
+            relation_t = inwmap::nwkmap_relation_t::PARENT;
             break;
         case nal::Nwk_relation::NWKMAP_RELATION_PREV_CHILD:
-            relation_t = nwkmap_relation_t::PREV_CHILD;
+            relation_t = inwmap::nwkmap_relation_t::PREV_CHILD;
             break;
         case nal::Nwk_relation::NWKMAP_RELATION_SIBLING:
-            relation_t = nwkmap_relation_t::SIBLING;
+            relation_t = inwmap::nwkmap_relation_t::SIBLING;
             break;
         case nal::Nwk_relation::NWKMAP_RELATION_UNKNOWN:
-            relation_t = nwkmap_relation_t::UNKNOWN;
+            relation_t = inwmap::nwkmap_relation_t::UNKNOWN;
             break;
         }
-        nwkmap_dev_type_t dev_t{};
+        inwmap::nwkmap_dev_type_t dev_t{};
         switch (_link.get_node()->get_type()) {
         case nal::Nwk_type::NWKMAP_DEV_COORDINATOR:
-            dev_t = nwkmap_dev_type_t::COORDINATOR;
+            dev_t = inwmap::nwkmap_dev_type_t::COORDINATOR;
             break;
         case nal::Nwk_type::NWKMAP_DEV_END_DEVICE:
-            dev_t = nwkmap_dev_type_t::END_DEVICE;
+            dev_t = inwmap::nwkmap_dev_type_t::END_DEVICE;
             break;
         case nal::Nwk_type::NWKMAP_DEV_ROUTER:
-            dev_t = nwkmap_dev_type_t::ROUTER;
+            dev_t = inwmap::nwkmap_dev_type_t::ROUTER;
             break;
         case nal::Nwk_type::NWKMAP_DEV_UNKNOWN:
-            dev_t = nwkmap_dev_type_t::UNKNOWN;
+            dev_t = inwmap::nwkmap_dev_type_t::UNKNOWN;
             break;
         }
-        result.push_back(nwkmap_dev_t{ _link.get_node()->get_id(), _link.get_lqi(), _link.get_node()->get_addr(), relation_t, dev_t });
+        result.push_back(inwmap::nwkmap_dev_t{ _link.get_node()->get_id(), _link.get_lqi(), _link.get_node()->get_addr(), relation_t, dev_t });
     }
     return result;
 }
