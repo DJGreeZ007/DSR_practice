@@ -13,6 +13,7 @@
 #include <algorithm>	/* std::find */
 #include <mutex>
 
+
 /* The second element is the ID of the initial node (storing the C-string) */
 static std::vector<std::pair<std::unique_ptr<nwbp::Network_bypass>, std::string>> net_bypasses{};
 /* Thread-safe access to vector */
