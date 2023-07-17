@@ -23,7 +23,7 @@ std::string nwbp::Network_bypass::hint(uint32_t& out_start_idx)
     }
 }
 
-void nwbp::Network_bypass::add(const char* dev_id, uint8_t start_idx, uint8_t total_cnt, std::vector<nwkmap_dev_t> devices)
+void nwbp::Network_bypass::add(const char* dev_id, uint8_t start_idx, uint8_t total_cnt, std::vector<inwmap::nwkmap_dev_t> devices)
 {
     std::string id { dev_id };
     /* The current node */
@@ -33,7 +33,7 @@ void nwbp::Network_bypass::add(const char* dev_id, uint8_t start_idx, uint8_t to
         label = id;
     }
 
-    for (const nwkmap_dev_t& dev_t_ptr : devices) {
+    for (const inwmap::nwkmap_dev_t& dev_t_ptr : devices) {
         /* Add links */
         Link new_link{ id, dev_t_ptr.dev_id, dev_t_ptr.lqi, dev_t_ptr.relationship };
         /* Checking that there is no such link yet */
@@ -70,8 +70,8 @@ void nwbp::Network_bypass::add(const char* dev_id, uint8_t start_idx, uint8_t to
             return;
 
         ++idx_cur_node;
-        while (idx_cur_node < nodes.size() && (nodes[idx_cur_node].device_type == nwkmap_dev_type_t::COORDINATOR ||
-                                               nodes[idx_cur_node].device_type == nwkmap_dev_type_t::END_DEVICE)) {
+        while (idx_cur_node < nodes.size() && (nodes[idx_cur_node].device_type == inwmap::nwkmap_dev_type_t::COORDINATOR ||
+                                               nodes[idx_cur_node].device_type == inwmap::nwkmap_dev_type_t::END_DEVICE)) {
             ++idx_cur_node;
         }
     }
@@ -85,7 +85,7 @@ void nwbp::Network_bypass::save_dot(const std::string& out_filename)
 
 
 /* Node */
-nwbp::Node::Node(const std::string& _id, const std::uint16_t& _addr, const nwkmap_dev_type_t& _device_type):
+nwbp::Node::Node(const std::string& _id, const std::uint16_t& _addr, const inwmap::nwkmap_dev_type_t& _device_type):
     id{ _id }, addr{ _addr }, device_type{ _device_type } {}
 
 bool nwbp::Link::operator==(const Link& _link)
@@ -94,5 +94,5 @@ bool nwbp::Link::operator==(const Link& _link)
 }
 
 /* Link */
-nwbp::Link::Link(const std::string& _from, const std::string& _to, const std::uint8_t& _lqi, const nwkmap_relation_t& _relation):
+nwbp::Link::Link(const std::string& _from, const std::string& _to, const std::uint8_t& _lqi, const inwmap::nwkmap_relation_t& _relation):
     from{ _from }, to{ _to }, lqi{ _lqi }, relation{ _relation } {}

@@ -36,22 +36,22 @@ std::string dfg::node_to_dot(const nwbp::Node& _node, const std::string& coordin
 
     switch (_node.device_type)
     {
-    case nwkmap_dev_type_t::COORDINATOR:
+    case inwmap::nwkmap_dev_type_t::COORDINATOR:
         result += style_COORDINATOR;
         result += ", color=";
         result += color_COORDINATOR;
         break;
-    case nwkmap_dev_type_t::END_DEVICE:
+    case inwmap::nwkmap_dev_type_t::END_DEVICE:
         result += style_END_DEVICE; 
         result += ", color=";
         result += color_END_DEVICE;
         break;
-    case nwkmap_dev_type_t::ROUTER:
+    case inwmap::nwkmap_dev_type_t::ROUTER:
         result += style_ROUTER;
         result += ", color=";
         result += color_ROUTER;
         break;
-    case nwkmap_dev_type_t::UNKNOWN:
+    case inwmap::nwkmap_dev_type_t::UNKNOWN:
         result += style_UNKNOWN;
         result += ", color=";
         result += color_UNKNOWN;
@@ -62,7 +62,7 @@ std::string dfg::node_to_dot(const nwbp::Node& _node, const std::string& coordin
 
     /* Inserting a device_id */
     result += _node.id + "\"";
-    if (_node.device_type == nwkmap_dev_type_t::COORDINATOR) {
+    if (_node.device_type == inwmap::nwkmap_dev_type_t::COORDINATOR) {
         result += " [label = \"" + coordinator_label + "\"]";
     }
     result += ";\n";
@@ -75,7 +75,7 @@ std::string dfg::link_to_dot(const std::vector<nwbp::Node>& _nodes, const nwbp::
     result += "    \"";
     if (_link.from.substr(0, 4) == "SGW-") {
         auto it = std::find_if(begin(_nodes), end(_nodes), [](const nwbp::Node& node) {
-            return node.device_type == nwkmap_dev_type_t::COORDINATOR;
+            return node.device_type == inwmap::nwkmap_dev_type_t::COORDINATOR;
             });
         if (it != end(_nodes)) {
             result += it->id;
@@ -87,19 +87,19 @@ std::string dfg::link_to_dot(const std::vector<nwbp::Node>& _nodes, const nwbp::
     result += "\"  ->  \"" + _link.to + "\" [label=\"LQI=" + std::to_string(_link.lqi) + "\", style=";
     switch (_link.relation)
     {
-    case nwkmap_relation_t::PARENT:
+    case inwmap::nwkmap_relation_t::PARENT:
         result += link_style_PARENT;
         break;
-    case nwkmap_relation_t::CHILD:
+    case inwmap::nwkmap_relation_t::CHILD:
         result += link_style_CHILD;
         break;
-    case nwkmap_relation_t::PREV_CHILD:
+    case inwmap::nwkmap_relation_t::PREV_CHILD:
         result += link_style_PREV_CHILD;
         break;
-    case nwkmap_relation_t::SIBLING:
+    case inwmap::nwkmap_relation_t::SIBLING:
         result += link_style_SIBLING;
         break;
-    case nwkmap_relation_t::UNKNOWN:
+    case inwmap::nwkmap_relation_t::UNKNOWN:
         result += link_style_UNKNOWN;
         break;
     }
